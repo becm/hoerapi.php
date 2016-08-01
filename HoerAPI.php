@@ -1,6 +1,40 @@
 <?php
 namespace HoerAPI;
 
+/**
+ * Create localized Datetime object
+ *
+ * @param string $date date string from Hoersuppe API
+ * @param string $zone timezone description
+ * @return null|Datetime
+ */
+function parseDate($date, $zone = null)
+{
+    static $Local, $GMT;
+
+    switch (strtolower($zone)) {
+        case null:
+        case 'local':
+        case 'default':
+        case 'berlin':
+        case 'europe/berlin':
+            if (!isset($Local)) {
+                 $Local = new \DateTimeZone('Europe/Berlin');
+            }
+            $zone = $Local;
+            break;
+        case 'gmt':
+            if (!isset($GMT)) {
+                 $GMT = new \DateTimeZone('GMT');
+            }
+            $zone = $GMT;
+            break;
+        default:
+            return null;
+    }
+    return new \Datetime($date, $zone);
+}
+
 class HoerAPI
 {
     const URL = "http://hoersuppe.de/api/";
